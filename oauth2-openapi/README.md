@@ -1,32 +1,22 @@
 # OAuth 2.0 Fine-Grained API Authorization with Gate and OpenAPI
 
-Protect your API against unauthorized access **without changing your application**.
-
-## Quickstart
-
-To get started with this example straight away, follow these steps. If you are not already familiar with Gate, OAuth 2.0, and OpenAPI, we recommend reading the whole README, or our accompanying [blogpost](https://www.slashid.dev/blog/openapi_oauth2_gate/).
-
-### Prerequisites
-
-- Docker and Docker Compose installed
-- A SlashID organization (create one for free [here](https://console.slashid.dev/signup?utm_source=gate-example-repo))
-- `cURL` or other software for making HTTP requests (such as Postman)
-
-### Setup
-
-- Clone this repository and navigate into its directory
-- Run `docker-compose pull` to get the latest images
-- Create a client ID/secret pair with SlashID using `create_client.sh`
-- Set the client ID and secret in `gate.yaml`
-- Use the client ID/secret to calculate the basic authorization header in `request_token.sh`
-- Run `docker-compose up` to start Gate and the backend server
-
-### Cleanup
-
-- Run `docker-compose down` to stop Gate and the backend server
-- [Delete the OAuth 2.0 client ID/secret](https://developer.slashid.dev/docs/api/delete-oauth-2-clients-oauth-client-id) using the SlashID API (this will also revoke all associated tokens)
+Protect your API against unauthorized access **without changing your application**. 
+Our newest Gate plugin automatically enforces OpenAPI security checks, so you can implement fine-grained access control for your APIs and workloads without writing any extra code.
 
 ## Introduction
+
+The [latest plugin for SlashID Gate](https://developer.slashid.dev/docs/gate/plugins/enforce-openapi-security)
+enforces all the security schemes defined in an OpenAPI document.
+You can keep your OpenAPI document as the single source of truth for describing your API, and deploy Gate at the edge
+to make sure all of your security schemes are fully enforced before a request reaches your service.
+Did your API change? No problem - just roll out a new Gate deploy with the updated specification.
+
+In this guide we'll explain the advantages of using OAuth 2.0 to secure your APIs, how you can describe this in an
+OpenAPI document, and how to use Gate to enforce it - all without writing a single line of code.
+This plugin works with any OAuth 2.0 provider, but for this example we'll use SlashID, as it only takes a few minutes to
+get up and running with OAuth 2.0 client credentials.
+
+## Background
 
 Long-lived and overly privileged API keys are one of the primary sources of data breaches today.
 As a result, enterprise companies' RFPs are increasingly requiring vendors to protect their APIs using two-legged or three-legged OAuth 2.0 flows with fine-grained access control.
@@ -36,8 +26,6 @@ two-legged OAuth 2.0 flow requirements, including out-of-the-box fine-grained ac
 
 While there are many choices of Authorization Server, including SlashID, that can provision client credentials and access tokens,
 SlashID is the only solution that also enforces access token validation for protected resources.
-
-## Background
 
 In this section we provide an overview of OAuth 2.0 Client Credentials and the OpenAPI specification.
 If you are already familiar with these topics, feel free to skip them.
@@ -92,10 +80,8 @@ your existing API gateway. Gate is part of a growing movement towards authentica
 is being embraced by [organizations that are serious about security](https://www.slashid.dev/products/gate/).
 For more information on Gate, check our [documentation](https://developer.slashid.dev/docs/gate).
 
-Our [latest plugin for Gate](https://developer.slashid.dev/docs/gate/plugins/enforce-openapi-security) enforces all the security schemes defined in an OpenAPI specification, solving both of the
-problems set out above (and more). You can keep your OpenAPI document as your single source of truth for describing
-your API, and deploy Gate at the edge to make sure all of your security schemes are fully enforced before a request
-reaches your service. Did your API change? No problem - just roll out a new Gate deploy with the updated specification.
+By enforcing the security schemes in an OpenAPI document, our [new OpenAPI security plugin](https://developer.slashid.dev/docs/gate/plugins/enforce-openapi-security)
+solves both of the problems described above (and more). Let's see this in action.
 
 ## Gate in Action
 
@@ -108,6 +94,33 @@ Let's see Gate's OpenAPI plugin in action. We're going to do four main steps:
 
 In particular, the example backend service will not include any logic for validating access tokens - Gate takes care of it,
 so you can focus on building the features your organization needs.
+
+If you want to follow these steps yourself, you can run this example locally with the following steps.
+All the necessary files and cURL commands are included in this repo.
+
+#### Prerequisites
+
+- Docker and Docker Compose installed
+- A SlashID organization (create one for free [here](https://console.slashid.dev/signup?utm_source=gate-example-repo))
+- `cURL` or other software for making HTTP requests (such as Postman)
+
+#### Setup
+
+- Clone this repository and navigate into its directory
+- Run `docker-compose pull` to get the latest images
+- Create a client ID/secret pair with SlashID using `create_client.sh`
+- Set the client ID and secret in `gate.yaml`
+- Use the client ID/secret to calculate the basic authorization header in `request_token.sh`
+- Run `docker-compose up` to start Gate and the backend server
+
+You can now make requests to `http://localhost:5000`.
+
+#### Cleanup
+
+Once you are finished, follow these steps to clean up your environment:
+
+- Run `docker-compose down` to stop Gate and the backend server
+- [Delete the OAuth 2.0 client ID/secret](https://developer.slashid.dev/docs/api/delete-oauth-2-clients-oauth-client-id) using the SlashID API (this will also revoke all associated tokens)
 
 ### OpenAPI Document
 
@@ -237,7 +250,9 @@ security:
 ### Client Credentials
 
 The next step is to create some client credentials, as Gate will need these in its configuration. We will use SlashID
-as the Authorization Server. Creating a set of client credentials is a straightforward API call:
+as the Authorization Server, but you can use any Oauth 2.0 provider that supports the client credentials flow.
+You can [get started with SlashID](https://console.slashid.dev/signup) in 30 seconds, and then
+creating a set of client credentials is a [straightforward API call](https://developer.slashid.dev/docs/api/post-oauth-2-clients):
 
 ```shell
 curl --location 'https://api.slashid.com/oauth2/clients' \
@@ -278,30 +293,7 @@ We will deploy the Gate Docker image and a simple [echo server backend](https://
 The backend service will respond to all incoming requests with a response describing the incoming request.
 (Note that this means it does not implement the API described above, but is sufficient to demonstrate that the security schemes are being enforced.)
 
-Note that the Gate container has two volumes defined:
-
-- `gate.yaml` is the Gate configuration file (see below)
-- `openapi_customers.yaml` is the OpenAPI document from above.
-
-```yaml
-version: '3.7'
-
-services:
-  backend:
-    image: kicbase/echo-server:1.0
-
-  gate-proxy:
-    image: slashid/gate-free:latest # or slashid/gate-enterprise:latest for enterprise customers
-    volumes:
-      - ./gate.yaml:/gate/gate.yaml
-      - ./openapi_customers.yaml:/gate/openapi_customers.yaml
-    ports:
-      - '5000:5000'
-    command: --yaml /gate/gate.yaml
-    restart: on-failure
-```
-
-Now let's see how to configure Gate to enforce the security schemes defined in the OpenAPI specification.
+First, let's configure Gate to enforce the security schemes defined in the OpenAPI specification.
 Note that the `enforce-openapi-security` plugin is enabled, meaning it is applied
 to all URLs unless explicitly disabled. This means the plugin will be applied to all the endpoints defined in the
 OpenAPI document.
@@ -331,6 +323,31 @@ gate:
         oauth2_token_introspection_client_secret: '<CLIENT SECRET>'
 ```
 
+Now we can write the Docker Compose file with the two services: Gate and the echo backend.
+
+```yaml
+version: '3.7'
+
+services:
+  backend:
+    image: kicbase/echo-server:1.0
+
+  gate-proxy:
+    image: slashid/gate-free:latest # or slashid/gate-enterprise:latest for enterprise customers
+    volumes:
+      - ./gate.yaml:/gate/gate.yaml
+      - ./openapi_customers.yaml:/gate/openapi_customers.yaml
+    ports:
+      - '5000:5000'
+    command: --yaml /gate/gate.yaml
+    restart: on-failure
+```
+
+Note that the Gate container has two volumes defined:
+
+- `gate.yaml` is the Gate configuration file from above
+- `openapi_customers.yaml` is the OpenAPI document from above.
+
 Run `docker-compose up` to start Gate and the backend service.
 
 ### Create Access Tokens and Make Requests
@@ -345,7 +362,7 @@ set of scopes:
 - `customers:read`, `customers:delete`
 - `customers:read`, `customers:create`, `customers:modify`, `customers:delete`
 
-To obtain an access token, make an API call like so to the SlashID `/oauth2/tokens` endpoint:
+To obtain an access token, make an API call to the [SlashID `/oauth2/tokens` endpoint]((https://developer.slashid.dev/docs/api/post-oauth-2-tokens)):
 
 ```shell
 curl --location 'https://api.slashid.com/oauth2/tokens' \
@@ -366,6 +383,7 @@ curl --location 'https://api.slashid.com/oauth2/tokens' \
 
 Note that this endpoint is authorized with HTTP Basic authorization using the client ID and client secret, and the scopes
 are provided as a space-separated list (as per the [OAuth 2.0 specification](https://datatracker.ietf.org/doc/html/rfc7662)).
+If you are using a different OAuth 2.0 provider you will need to modify the request accordingly.
 
 We can repeat this with different `scope` value to obtain the six access tokens.
 
@@ -435,7 +453,7 @@ This time we get a `200` response and the echo - we successfully created a new c
 The table below shows the response status code for each access token for different requests.
 
 | Token scope                                                                              | POST /customers | GET /customers/cid123 | PATCH /customers/cid123 | DELETE /customers/cid123 |
-|------------------------------------------------------------------------------------------|-----------------|-----------------------|-------------------------|--------------------------|
+| ---------------------------------------------------------------------------------------- | --------------- | --------------------- | ----------------------- | ------------------------ |
 | `customers:read`                                                                         | 403 Forbidden   | 200 OK                | 403 Forbidden           | 403 Forbidden            |
 | `customers:create`                                                                       | 403 Forbidden   | 403 Forbidden         | 403 Forbidden           | 403 Forbidden            |
 | `customers:read` <br/>`customers:create`                                                 | 200 OK          | 200 OK                | 403 Forbidden           | 403 Forbidden            |
@@ -462,6 +480,6 @@ In a future guide, we'll show you how to use similar approach to easily create c
 for your APIs by using an OpenAPI document as the source of truth for Gate's configuration.
 
 Want to try out Gate? Check our [documentation](https://developer.slashid.dev/docs/gate)!
-Ready to try SlashID? Sign up [here](https://console.slashid.dev/signup?utm_source=gate-example-repo)!
+Ready to try SlashID? Sign up [here](https://console.slashid.dev/signup)!
 
 Is there a feature you’d like to see, or have you tried out Gate and have some feedback? [Let us know](mailto:contact@slashid.dev)!
