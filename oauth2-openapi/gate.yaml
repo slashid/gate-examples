@@ -1,0 +1,22 @@
+gate:
+  mode: proxy
+  port: 5000
+  tls:
+    enabled: false
+  log:
+    format: text
+    level: trace
+  default:
+    target: http://backend:8080
+
+  plugins:
+    - id: customers_openapi
+      type: enforce-openapi-security
+      enabled: true
+      parameters:
+        openapi_spec_url: "/gate/openapi_customers.yaml"
+        openapi_spec_format: yaml
+        oauth2_token_format: opaque
+        oauth2_token_introspection_url: "https://api.slashid.com/oauth2/tokens/introspect"
+        oauth2_token_introspection_client_id: "<CLIENT ID>"
+        oauth2_token_introspection_client_secret: "<CLIENT SECRET>"

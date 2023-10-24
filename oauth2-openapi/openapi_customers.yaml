@@ -1,0 +1,105 @@
+openapi: 3.0.1
+
+info:
+  title: Test API
+  version: "1.0"
+
+servers:
+  - url: "https://example.local"
+
+components:
+  securitySchemes:
+    OAuth2ClientCreds:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: "https://api.slashid.com/oauth2/tokens"
+          scopes:
+            customers:read: Read information about customers
+            customers:create: Create a customer
+            customers:modify: Modify existing customers
+            customers:delete: Delete existing customers
+
+paths:
+  /customers:
+    post:
+      security:
+        - OAuth2ClientCreds: [customers:read, customers:create]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customer_name
+                - customer_tax_id
+              properties:
+                customer_name:
+                  type: string
+                customer_tax_id:
+                  type: string
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: string
+
+  /customers/{customer_id}:
+    parameters:
+      - name: customer_id
+        in: path
+        required: true
+        schema:
+          type: string
+
+    get:
+      security:
+        - OAuth2ClientCreds: [customers:read]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: string
+                  customer_name:
+                    type: string
+                  customer_tax_id:
+                    type: string
+
+    patch:
+      security:
+        - OAuth2ClientCreds: [customers:read, customers:modify]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_name:
+                  type: string
+                customer_tax_id:
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+
+    delete:
+      security:
+        - OAuth2ClientCreds: [customers:read, customers:delete]
+      responses:
+        "200":
+          description: OK
+
+security:
+  - OAuth2ClientCreds: [customers:read, customers:create, customers:modify, customers:delete]
