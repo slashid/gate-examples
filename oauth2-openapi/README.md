@@ -29,7 +29,7 @@ To get started with this example straight away, follow these steps. If you are n
 Long-lived and overly privileged API keys are one of the primary sources of data breaches today.
 As a result, enterprise companies' RFPs are increasingly requiring vendors to protect their APIs using two-legged or three-legged OAuth 2.0 flows with fine-grained access control.
 
-In this blog post, we'll demonstrate how to quickly add and enforce client credentials for your APIs to comply with
+In this guide, we'll demonstrate how to quickly add and enforce client credentials for your APIs to comply with
 two-legged OAuth 2.0 flow requirements, including out-of-the-box fine-grained access control.
 
 While there are many choices of Authorization Server, including SlashID, that can provision client credentials and access tokens,
@@ -453,10 +453,10 @@ caution.)
 
 ## Conclusion
 
-In this blog post we've described how OAuth 2.0 client credentials and OpenAPI can help secure your services, and how
+In this guide we've described how OAuth 2.0 client credentials and OpenAPI can help secure your services, and how
 Gate can simplify this down to a few simple steps.
 
-In a future blog post, we'll show you how to use similar approach to easily create custom rate limiting policies
+In a future guide, we'll show you how to use similar approach to easily create custom rate limiting policies
 for your APIs by using an OpenAPI document as the source of truth for Gate's configuration.
 
 Want to try out Gate? Check our [documentation](https://developer.slashid.dev/docs/gate)!
