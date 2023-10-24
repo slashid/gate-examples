@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  backend:
+    image: kicbase/echo-server:1.0
+
+  gate-proxy:
+    image: slashid/gate-free:latest # or slashid/gate-enterprise:latest for enterprise customers
+    volumes:
+      - ./gate.yaml:/gate/gate.yaml
+      - ./openapi_customers.yaml:/gate/openapi_customers.yaml
+    ports:
+      - "5000:5000"
+    command: --yaml /gate/gate.yaml
+    restart: on-failure
