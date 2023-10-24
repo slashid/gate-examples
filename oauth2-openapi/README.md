@@ -1,5 +1,7 @@
 # OAuth 2.0 Fine-Grained API Authorization with Gate and OpenAPI
 
+Protect your API against unauthorized access **without changing your application**.
+
 ## Quickstart
 
 To get started with this example straight away, follow these steps. If you are not already familiar with Gate, OAuth 2.0, and OpenAPI, we recommend reading the whole README, or our accompanying [blogpost](https://www.slashid.dev/blog/openapi_oauth2_gate/).
