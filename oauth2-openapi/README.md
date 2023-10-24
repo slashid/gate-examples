@@ -7,7 +7,7 @@ To get started with this example straight away, follow these steps. If you are n
 ### Prerequisites
 
 - Docker and Docker Compose installed
-- A SlashID organization (create one for free [here](https://console.slashid.dev/signup?utm_source=website-slashid))
+- A SlashID organization (create one for free [here](https://console.slashid.dev/signup?utm_source=gate-example-repo))
 - `cURL` or other software for making HTTP requests (such as Postman)
 
 ### Setup
@@ -460,6 +460,6 @@ In a future blog post, we'll show you how to use similar approach to easily crea
 for your APIs by using an OpenAPI document as the source of truth for Gate's configuration.
 
 Want to try out Gate? Check our [documentation](https://developer.slashid.dev/docs/gate)!
-Ready to try SlashID? Sign up [here](https://console.slashid.dev/signup)!
+Ready to try SlashID? Sign up [here](https://console.slashid.dev/signup?utm_source=gate-example-repo)!
 
 Is there a feature you’d like to see, or have you tried out Gate and have some feedback? [Let us know](mailto:contact@slashid.dev)!
