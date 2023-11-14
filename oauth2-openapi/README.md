@@ -3,6 +3,56 @@
 Protect your API against unauthorized access **without changing your application**. 
 Our newest Gate plugin automatically enforces OpenAPI security checks, so you can implement fine-grained access control for your APIs and workloads without writing any extra code.
 
+## Quick Start
+The guide below provides context and a deeper-dive on how to setup OAuth 2.0 Client Credentials as well enforcing OAuth 2.0 scopes on an OpenAPI spec in Gate. 
+To see this in action, you can follow these quick steps: 
+
+1. Create a free account at https://console.slashid.dev/signup 
+2. Navigate to https://console.slashid.dev/configuration/general to note down the Organization ID and to generate an API Key for SlashID
+2. Run `docker-compose pull` to get the latest images
+3. Make sure you have `curl` and `jq` installed and create a client ID/secret pair with SlashID using `./create_client.sh <Organization ID> <API Key>`
+4. Set the client ID and secret in `gate.yaml`
+5. Use the client ID/secret to calculate the basic authorization header with `./request_token.sh <client_id> <client_secret>`. Note down the access token, as it will be used as the bearer for future requests. This script requests a token with `customers:read` and `customers:create` scopes
+6. Run `docker-compose up` to start Gate and the backend server
+
+You can now make requests to `http://localhost:5000`.
+
+Note that for this example we are using an echo server, this means it does not implement the API described above, but is sufficient to demonstrate that the security schemes are being enforced.
+
+Let's see it in action: 
+
+```bash
+curl -X POST http://localhost:5000/customers -H "Authorization: Bearer <access_token>" --data '{ "customer_name": "test_customer", "customer_tax_id": "4"}'
+< HTTP/1.1 200 OK
+< Content-Length: 605
+< Content-Type: text/plain
+< Date: Tue, 14 Nov 2023 12:24:28 GMT
+< Via: 1.0 gate
+< 
+...
+{ "customer_name": "test_customer", "customer_tax_id": "4"}
+
+```
+We receive a 200 because we are authorized to create the user, let's try to delete it now
+
+```bash
+curl -X DELETE -v http://localhost:5000/customers/4 -H "Authorization: Bearer <access_token>" 
+*   Trying 127.0.0.1:5000...
+* Connected to localhost (127.0.0.1) port 5000 (#0)
+> DELETE /customers/4 HTTP/1.1
+> Host: localhost:5000
+> User-Agent: curl/7.87.0
+> Accept: */*
+> Authorization: Bearer slashid-access:AALesbFI5QlPnxSTvUWPG5qdQVGjRF9VKDj2wqcZeXArCor4TjKOZeheQ-I7L40Y6afVpjFkZ6YOjZXqKoTOU0dE72xZIHES6Ihr-qcuttLuAFg7ok4cpgqaT5Lv3lnd43D2kDVd5UWNj3GQj_CPdhR5v_N6wxwvtpVFoXK1emHY-w==.AUNubqUrFAy9IeOAHerbWXz3795AXc9dQ7oNHKyKYZFkBq_rTg==
+> 
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 403 Forbidden
+
+```
+The request was forbidden because we lack the correct scope to delete a user. 
+
+You can customize the `request_token` and `openapi_customers.yaml` files to experiment with different scopes and different enforcement policies!
+
 ## Introduction
 
 The [latest plugin for SlashID Gate](https://developer.slashid.dev/docs/gate/plugins/enforce-openapi-security)
