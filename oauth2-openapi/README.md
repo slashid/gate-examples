@@ -4,7 +4,7 @@ Protect your API against unauthorized access **without changing your application
 Our newest Gate plugin automatically enforces OpenAPI security checks, so you can implement fine-grained access control for your APIs and workloads without writing any extra code.
 
 ## Quick Start
-The guide below provides context and a deeper-dive on how to setup OAuth 2.0 Client Credentials as well enforcing OAuth 2.0 scopes on an OpenAPI spec in Gate. 
+The guide below provides context and a deeper-dive on how to set up OAuth 2.0 Client Credentials and enforce OAuth 2.0 scopes using an OpenAPI spec and Gate. 
 To see this in action, you can follow these quick steps: 
 
 1. Create a free account at https://console.slashid.dev/signup 
