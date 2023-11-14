@@ -43,7 +43,7 @@ curl -X DELETE -v http://localhost:5000/customers/4 -H "Authorization: Bearer <a
 > Host: localhost:5000
 > User-Agent: curl/7.87.0
 > Accept: */*
-> Authorization: Bearer slashid-access:AALesbFI5QlPnxSTvUWPG5qdQVGjRF9VKDj2wqcZeXArCor4TjKOZeheQ-I7L40Y6afVpjFkZ6YOjZXqKoTOU0dE72xZIHES6Ihr-qcuttLuAFg7ok4cpgqaT5Lv3lnd43D2kDVd5UWNj3GQj_CPdhR5v_N6wxwvtpVFoXK1emHY-w==.AUNubqUrFAy9IeOAHerbWXz3795AXc9dQ7oNHKyKYZFkBq_rTg==
+> Authorization: Bearer <access_token>
 > 
 * Mark bundle as not supporting multiuse
 < HTTP/1.1 403 Forbidden
