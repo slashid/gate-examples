@@ -51,7 +51,7 @@ curl -X DELETE -v http://localhost:5000/customers/4 -H "Authorization: Bearer <a
 ```
 The request was forbidden because we lack the correct scope to delete a customer. 
 
-You can customize the `request_token` and `openapi_customers.yaml` files to experiment with different scopes and different enforcement policies!
+You can customize the `request_token.sh` and `openapi_customers.yaml` files to experiment with different scopes and different enforcement policies!
 
 Keep reading for more information on how you can quickly secure your API using OpenAPI and Gate.
 
