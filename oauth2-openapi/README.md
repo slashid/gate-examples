@@ -33,7 +33,7 @@ curl -X POST http://localhost:5000/customers -H "Authorization: Bearer <access_t
 { "customer_name": "test_customer", "customer_tax_id": "4"}
 
 ```
-We receive a 200 because we are authorized to create the user, let's try to delete it now
+We receive a 200 because we are authorized to create a customer - the access token has the correct scopes for the operation. Now let's try to delete a customer:
 
 ```bash
 curl -X DELETE -v http://localhost:5000/customers/4 -H "Authorization: Bearer <access_token>" 
