@@ -49,7 +49,7 @@ curl -X DELETE -v http://localhost:5000/customers/4 -H "Authorization: Bearer <a
 < HTTP/1.1 403 Forbidden
 
 ```
-The request was forbidden because we lack the correct scope to delete a user. 
+The request was forbidden because we lack the correct scope to delete a customer. 
 
 You can customize the `request_token` and `openapi_customers.yaml` files to experiment with different scopes and different enforcement policies!
 
