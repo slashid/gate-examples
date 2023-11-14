@@ -17,7 +17,7 @@ To see this in action, you can follow these quick steps:
 
 You can now make requests to `http://localhost:5000`.
 
-**Note that for this example we are using an echo server, this means it does not implement the API described above, but is sufficient to demonstrate that the security schemes are being enforced.**
+**Note that for this example we are using an echo server, which means it does not implement the API described above, but is sufficient to demonstrate that the security schemes are being enforced.**
 
 Let's see it in action: 
 
