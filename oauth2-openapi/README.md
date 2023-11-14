@@ -53,6 +53,8 @@ The request was forbidden because we lack the correct scope to delete a customer
 
 You can customize the `request_token` and `openapi_customers.yaml` files to experiment with different scopes and different enforcement policies!
 
+Keep reading for more information on how you can quickly secure your API using OpenAPI and Gate.
+
 ## Introduction
 
 The [latest plugin for SlashID Gate](https://developer.slashid.dev/docs/gate/plugins/enforce-openapi-security)
